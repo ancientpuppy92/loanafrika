@@ -14,7 +14,99 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      loan_applications: {
+        Row: {
+          account_number: string | null
+          amount: number
+          application_fee: number
+          bank_name: string | null
+          bvn_or_id: string | null
+          country: string
+          created_at: string
+          currency: string
+          employment_status: string | null
+          id: string
+          loan_type: string
+          monthly_income: number | null
+          payment_reference: string | null
+          payment_status: string
+          purpose: string | null
+          status: string
+          tenure_months: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_number?: string | null
+          amount: number
+          application_fee: number
+          bank_name?: string | null
+          bvn_or_id?: string | null
+          country: string
+          created_at?: string
+          currency: string
+          employment_status?: string | null
+          id?: string
+          loan_type: string
+          monthly_income?: number | null
+          payment_reference?: string | null
+          payment_status?: string
+          purpose?: string | null
+          status?: string
+          tenure_months: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_number?: string | null
+          amount?: number
+          application_fee?: number
+          bank_name?: string | null
+          bvn_or_id?: string | null
+          country?: string
+          created_at?: string
+          currency?: string
+          employment_status?: string | null
+          id?: string
+          loan_type?: string
+          monthly_income?: number | null
+          payment_reference?: string | null
+          payment_status?: string
+          purpose?: string | null
+          status?: string
+          tenure_months?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          country: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
