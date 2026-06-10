@@ -9,38 +9,155 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoansRouteImport } from './routes/loans'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as ApiPublicKorapayWebhookRouteImport } from './routes/api/public/korapay-webhook'
+import { Route as AuthenticatedApplyLoanTypeRouteImport } from './routes/_authenticated/apply.$loanType'
 
+const LoansRoute = LoansRouteImport.update({
+  id: '/loans',
+  path: '/loans',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ApiPublicKorapayWebhookRoute = ApiPublicKorapayWebhookRouteImport.update({
+  id: '/api/public/korapay-webhook',
+  path: '/api/public/korapay-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedApplyLoanTypeRoute =
+  AuthenticatedApplyLoanTypeRouteImport.update({
+    id: '/apply/$loanType',
+    path: '/apply/$loanType',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/auth': typeof AuthRoute
+  '/loans': typeof LoansRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/apply/$loanType': typeof AuthenticatedApplyLoanTypeRoute
+  '/api/public/korapay-webhook': typeof ApiPublicKorapayWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/auth': typeof AuthRoute
+  '/loans': typeof LoansRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/apply/$loanType': typeof AuthenticatedApplyLoanTypeRoute
+  '/api/public/korapay-webhook': typeof ApiPublicKorapayWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/about': typeof AboutRoute
+  '/auth': typeof AuthRoute
+  '/loans': typeof LoansRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/apply/$loanType': typeof AuthenticatedApplyLoanTypeRoute
+  '/api/public/korapay-webhook': typeof ApiPublicKorapayWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/auth'
+    | '/loans'
+    | '/dashboard'
+    | '/apply/$loanType'
+    | '/api/public/korapay-webhook'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/auth'
+    | '/loans'
+    | '/dashboard'
+    | '/apply/$loanType'
+    | '/api/public/korapay-webhook'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/about'
+    | '/auth'
+    | '/loans'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/apply/$loanType'
+    | '/api/public/korapay-webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AboutRoute: typeof AboutRoute
+  AuthRoute: typeof AuthRoute
+  LoansRoute: typeof LoansRoute
+  ApiPublicKorapayWebhookRoute: typeof ApiPublicKorapayWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/loans': {
+      id: '/loans'
+      path: '/loans'
+      fullPath: '/loans'
+      preLoaderRoute: typeof LoansRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +165,50 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/korapay-webhook': {
+      id: '/api/public/korapay-webhook'
+      path: '/api/public/korapay-webhook'
+      fullPath: '/api/public/korapay-webhook'
+      preLoaderRoute: typeof ApiPublicKorapayWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/apply/$loanType': {
+      id: '/_authenticated/apply/$loanType'
+      path: '/apply/$loanType'
+      fullPath: '/apply/$loanType'
+      preLoaderRoute: typeof AuthenticatedApplyLoanTypeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedApplyLoanTypeRoute: typeof AuthenticatedApplyLoanTypeRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedApplyLoanTypeRoute: AuthenticatedApplyLoanTypeRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AboutRoute: AboutRoute,
+  AuthRoute: AuthRoute,
+  LoansRoute: LoansRoute,
+  ApiPublicKorapayWebhookRoute: ApiPublicKorapayWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
