@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { useCountry } from "@/lib/country-context";
 import { useAuth } from "@/lib/auth-context";
-import { getProduct, formatMoney } from "@/lib/loans";
+import { getProduct, formatMoney, calculateApplicationFee } from "@/lib/loans";
 import { initiateApplication, verifyPayment } from "@/lib/loans.functions";
 import { toast } from "sonner";
 import { Loader2, ShieldCheck } from "lucide-react";
