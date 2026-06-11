@@ -8,9 +8,12 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { AuthProvider } from "@/lib/auth-context";
+import { CountryProvider } from "@/lib/country-context";
 
 function NotFoundComponent() {
   return (
@@ -122,8 +125,12 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <AuthProvider>
+        <CountryProvider>
+          <Outlet />
+          <Toaster position="top-center" richColors />
+        </CountryProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
