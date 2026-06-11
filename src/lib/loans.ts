@@ -115,3 +115,10 @@ export function formatMoney(amount: number, country: CountryCode) {
 export function getProduct(country: CountryCode, slug: string) {
   return COUNTRIES[country].products.find((p) => p.slug === slug);
 }
+
+// Processing fee scales with loan amount.
+// Starting fee is the product's base (KE = 230 KSh, NG = 5,000 NGN) and grows at 1% of the requested amount.
+export function calculateApplicationFee(amount: number, baseFee: number) {
+  const computed = Math.round((amount * 0.01) / 10) * 10; // round to nearest 10
+  return Math.max(baseFee, computed);
+}
