@@ -224,16 +224,16 @@ function ApplyPage() {
           <div className="rounded-lg bg-muted p-4 flex items-start gap-3">
             <ShieldCheck className="h-5 w-5 text-primary mt-0.5" />
             <div className="text-sm">
-              <p className="font-medium">Application fee: {formatMoney(product.applicationFee, country)}</p>
+              <p className="font-medium">Application fee: {formatMoney(applicationFee, country)}</p>
               <p className="text-muted-foreground">
-                Charged securely via Korapay. Required to process your application.
+                Calculated from your loan amount (1%, minimum {formatMoney(product.applicationFee, country)}). Charged securely via Korapay.
               </p>
             </div>
           </div>
 
           <Button type="submit" size="lg" className="w-full" disabled={submitting}>
             {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Pay {formatMoney(product.applicationFee, country)} & submit
+            Pay {formatMoney(applicationFee, country)} & submit
           </Button>
         </form>
       </main>
