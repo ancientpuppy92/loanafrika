@@ -98,6 +98,8 @@ function ApplyPage() {
     );
   }
 
+  const applicationFee = product ? calculateApplicationFee(amount || product.minAmount, product.applicationFee) : 0;
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!product) return;
@@ -113,7 +115,7 @@ function ApplyPage() {
           loanType: product.slug,
           amount,
           tenureMonths: tenure,
-          applicationFee: product.applicationFee,
+          applicationFee,
           currency: config.korapayCurrency,
           purpose: purpose || undefined,
           employmentStatus,
