@@ -94,7 +94,7 @@ function SignUpForm({ initialCountry }: { initialCountry: "NG" | "KE" }) {
     });
     setLoading(false);
     if (error) toast.error(error.message);
-    else toast.success("Account created! You can apply now.");
+    else toast.success("Account created — taking you to your dashboard…");
   }
 
   return (

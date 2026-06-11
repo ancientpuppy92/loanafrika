@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { useCountry } from "@/lib/country-context";
 import { useAuth } from "@/lib/auth-context";
-import { getProduct, formatMoney } from "@/lib/loans";
+import { getProduct, formatMoney, calculateApplicationFee } from "@/lib/loans";
 import { initiateApplication, verifyPayment } from "@/lib/loans.functions";
 import { toast } from "sonner";
 import { Loader2, ShieldCheck } from "lucide-react";
@@ -98,6 +98,8 @@ function ApplyPage() {
     );
   }
 
+  const applicationFee = product ? calculateApplicationFee(amount || product.minAmount, product.applicationFee) : 0;
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!product) return;
@@ -113,7 +115,7 @@ function ApplyPage() {
           loanType: product.slug,
           amount,
           tenureMonths: tenure,
-          applicationFee: product.applicationFee,
+          applicationFee,
           currency: config.korapayCurrency,
           purpose: purpose || undefined,
           employmentStatus,
@@ -222,16 +224,16 @@ function ApplyPage() {
           <div className="rounded-lg bg-muted p-4 flex items-start gap-3">
             <ShieldCheck className="h-5 w-5 text-primary mt-0.5" />
             <div className="text-sm">
-              <p className="font-medium">Application fee: {formatMoney(product.applicationFee, country)}</p>
+              <p className="font-medium">Application fee: {formatMoney(applicationFee, country)}</p>
               <p className="text-muted-foreground">
-                Charged securely via Korapay. Required to process your application.
+                Calculated from your loan amount (1%, minimum {formatMoney(product.applicationFee, country)}). Charged securely via Korapay.
               </p>
             </div>
           </div>
 
           <Button type="submit" size="lg" className="w-full" disabled={submitting}>
             {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Pay {formatMoney(product.applicationFee, country)} & submit
+            Pay {formatMoney(applicationFee, country)} & submit
           </Button>
         </form>
       </main>

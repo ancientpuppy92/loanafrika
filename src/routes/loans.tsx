@@ -36,7 +36,7 @@ function LoansPage() {
                 <Row k="Amount range" v={`${formatMoney(p.minAmount, config.code)} – ${formatMoney(p.maxAmount, config.code)}`} />
                 <Row k="Tenure" v={`${p.tenureMonths[0]} – ${p.tenureMonths[p.tenureMonths.length - 1]} months`} />
                 <Row k="Interest" v={p.interestRate} />
-                <Row k="Application fee" v={formatMoney(p.applicationFee, config.code)} highlight />
+                <Row k="Application fee" v={`from ${formatMoney(p.applicationFee, config.code)} (1% of amount)`} highlight />
               </dl>
               <Button asChild className="mt-6 w-full">
                 <Link to="/apply/$loanType" params={{ loanType: p.slug }}>Apply now</Link>

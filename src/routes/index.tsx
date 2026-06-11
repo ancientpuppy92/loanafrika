@@ -105,7 +105,7 @@ function Home() {
                 <div className="mt-4 text-sm space-y-1.5">
                   <div className="flex justify-between"><span className="text-muted-foreground">Amount</span><span className="font-medium">{formatMoney(p.minAmount, config.code)} – {formatMoney(p.maxAmount, config.code)}</span></div>
                   <div className="flex justify-between"><span className="text-muted-foreground">Interest</span><span className="font-medium">{p.interestRate}</span></div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">App. fee</span><span className="font-medium">{formatMoney(p.applicationFee, config.code)}</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">App. fee</span><span className="font-medium">from {formatMoney(p.applicationFee, config.code)}</span></div>
                 </div>
                 <Button asChild className="w-full mt-5">
                   <Link to="/apply/$loanType" params={{ loanType: p.slug }}>Apply now</Link>
