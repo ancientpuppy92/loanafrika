@@ -119,3 +119,10 @@
 @utility bg-card-gradient { background: var(--gradient-card); }
 @utility shadow-elegant { box-shadow: var(--shadow-elegant); }
 @utility shadow-soft { box-shadow: var(--shadow-soft); }
+
+/* Hide Lovable edit badge on published frontend */
+[class*="lovable-badge"],
+[data-lovable-badge],
+iframe[src*="lovable"] {
+  display: none !important;
+}

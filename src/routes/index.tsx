@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { useCountry } from "@/lib/country-context";
+import { useAuth } from "@/lib/auth-context";
 import { formatMoney } from "@/lib/loans";
 import { ArrowRight, ShieldCheck, Zap, Wallet, CheckCircle2 } from "lucide-react";
 
@@ -18,6 +19,7 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const { config } = useCountry();
+  const { user } = useAuth();
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -44,7 +46,7 @@ function Home() {
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline" className="border-white/30 bg-white/5 text-primary-foreground hover:bg-white/15">
-                  <Link to="/auth">Create account</Link>
+                  {user ? <Link to="/dashboard">Your applications</Link> : <Link to="/auth">Create account</Link>}
                 </Button>
               </div>
             </div>
