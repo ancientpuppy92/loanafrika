@@ -46,7 +46,7 @@ function Home() {
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline" className="border-white/30 bg-white/5 text-primary-foreground hover:bg-white/15">
-                  <Link to="/auth">Create account</Link>
+                  {user ? <Link to="/dashboard">Your applications</Link> : <Link to="/auth">Create account</Link>}
                 </Button>
               </div>
             </div>
