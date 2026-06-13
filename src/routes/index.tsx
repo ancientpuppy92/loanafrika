@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { useCountry } from "@/lib/country-context";
+import { useAuth } from "@/lib/auth-context";
 import { formatMoney } from "@/lib/loans";
 import { ArrowRight, ShieldCheck, Zap, Wallet, CheckCircle2 } from "lucide-react";
 
