@@ -19,6 +19,7 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const { config } = useCountry();
+  const { user } = useAuth();
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
