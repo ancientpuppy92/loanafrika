@@ -16,6 +16,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ApiPublicKorapayWebhookRouteImport } from './routes/api/public/korapay-webhook'
+import { Route as AuthenticatedStatusIdRouteImport } from './routes/_authenticated/status.$id'
 import { Route as AuthenticatedApplyLoanTypeRouteImport } from './routes/_authenticated/apply.$loanType'
 
 const LoansRoute = LoansRouteImport.update({
@@ -52,6 +53,11 @@ const ApiPublicKorapayWebhookRoute = ApiPublicKorapayWebhookRouteImport.update({
   path: '/api/public/korapay-webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedStatusIdRoute = AuthenticatedStatusIdRouteImport.update({
+  id: '/status/$id',
+  path: '/status/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedApplyLoanTypeRoute =
   AuthenticatedApplyLoanTypeRouteImport.update({
     id: '/apply/$loanType',
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/loans': typeof LoansRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/apply/$loanType': typeof AuthenticatedApplyLoanTypeRoute
+  '/status/$id': typeof AuthenticatedStatusIdRoute
   '/api/public/korapay-webhook': typeof ApiPublicKorapayWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/loans': typeof LoansRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/apply/$loanType': typeof AuthenticatedApplyLoanTypeRoute
+  '/status/$id': typeof AuthenticatedStatusIdRoute
   '/api/public/korapay-webhook': typeof ApiPublicKorapayWebhookRoute
 }
 export interface FileRoutesById {
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/loans': typeof LoansRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/apply/$loanType': typeof AuthenticatedApplyLoanTypeRoute
+  '/_authenticated/status/$id': typeof AuthenticatedStatusIdRoute
   '/api/public/korapay-webhook': typeof ApiPublicKorapayWebhookRoute
 }
 export interface FileRouteTypes {
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/loans'
     | '/dashboard'
     | '/apply/$loanType'
+    | '/status/$id'
     | '/api/public/korapay-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/loans'
     | '/dashboard'
     | '/apply/$loanType'
+    | '/status/$id'
     | '/api/public/korapay-webhook'
   id:
     | '__root__'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/loans'
     | '/_authenticated/dashboard'
     | '/_authenticated/apply/$loanType'
+    | '/_authenticated/status/$id'
     | '/api/public/korapay-webhook'
   fileRoutesById: FileRoutesById
 }
@@ -179,6 +191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicKorapayWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/status/$id': {
+      id: '/_authenticated/status/$id'
+      path: '/status/$id'
+      fullPath: '/status/$id'
+      preLoaderRoute: typeof AuthenticatedStatusIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/apply/$loanType': {
       id: '/_authenticated/apply/$loanType'
       path: '/apply/$loanType'
@@ -192,11 +211,13 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedApplyLoanTypeRoute: typeof AuthenticatedApplyLoanTypeRoute
+  AuthenticatedStatusIdRoute: typeof AuthenticatedStatusIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedApplyLoanTypeRoute: AuthenticatedApplyLoanTypeRoute,
+  AuthenticatedStatusIdRoute: AuthenticatedStatusIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
