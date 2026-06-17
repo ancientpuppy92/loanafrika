@@ -44,7 +44,12 @@ function DashboardPage() {
             </div>
           )}
           {data?.applications.map((a: any) => (
-            <div key={a.id} className="rounded-xl border bg-card p-5 flex flex-wrap items-center gap-4 justify-between">
+            <Link
+              key={a.id}
+              to="/status/$id"
+              params={{ id: a.id }}
+              className="rounded-xl border bg-card p-5 flex flex-wrap items-center gap-4 justify-between hover:border-primary/50 hover:shadow-soft transition"
+            >
               <div>
                 <p className="font-semibold capitalize">{a.loan_type} loan · {a.country === "NG" ? "🇳🇬" : "🇰🇪"}</p>
                 <p className="text-sm text-muted-foreground">
@@ -60,7 +65,7 @@ function DashboardPage() {
                 </Badge>
                 <Badge variant="outline">Status: {a.status.replace("_", " ")}</Badge>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </main>

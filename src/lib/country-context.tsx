@@ -1,11 +1,23 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { COUNTRIES, type CountryCode } from "./loans";
 
+interface DetectedInfo {
+  country: CountryCode | null;
+  countryName?: string;
+  city?: string;
+  ip?: string;
+  org?: string;
+  isProxy?: boolean;
+}
+
 interface CountryContextValue {
   country: CountryCode;
   config: typeof COUNTRIES[CountryCode];
   setCountry: (c: CountryCode) => void;
-  detected: boolean;
+  resetToDetected: () => void;
+  detected: DetectedInfo;
+  detecting: boolean;
+  isOverridden: boolean;
 }
 
 const CountryContext = createContext<CountryContextValue | null>(null);
@@ -13,34 +25,57 @@ const STORAGE_KEY = "lendafrica.country";
 
 export function CountryProvider({ children }: { children: ReactNode }) {
   const [country, setCountryState] = useState<CountryCode>("NG");
-  const [detected, setDetected] = useState(false);
+  const [detected, setDetected] = useState<DetectedInfo>({ country: null });
+  const [detecting, setDetecting] = useState(true);
+  const [isOverridden, setIsOverridden] = useState(false);
 
   useEffect(() => {
     const saved = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
     if (saved === "NG" || saved === "KE") {
       setCountryState(saved);
-      setDetected(true);
-      return;
+      setIsOverridden(true);
     }
-    // Auto-detect via free IP API
+    // Proxy / geo detection via free IP API
     fetch("https://ipapi.co/json/")
       .then((r) => r.json())
       .then((data) => {
         const code = (data?.country_code || "").toUpperCase();
-        if (code === "KE") setCountryState("KE");
-        else if (code === "NG") setCountryState("NG");
+        const detectedCountry: CountryCode | null =
+          code === "KE" ? "KE" : code === "NG" ? "NG" : null;
+        const org: string = data?.org || "";
+        const isProxy = /vpn|proxy|hosting|datacenter|cloud|amazon|google|digital ?ocean|ovh|linode|cloudflare/i.test(org);
+        setDetected({
+          country: detectedCountry,
+          countryName: data?.country_name,
+          city: data?.city,
+          ip: data?.ip,
+          org,
+          isProxy,
+        });
+        if (!saved && detectedCountry) setCountryState(detectedCountry);
       })
       .catch(() => {})
-      .finally(() => setDetected(true));
+      .finally(() => setDetecting(false));
   }, []);
 
   const setCountry = (c: CountryCode) => {
     setCountryState(c);
+    setIsOverridden(detected.country ? c !== detected.country : true);
     if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEY, c);
   };
 
+  const resetToDetected = () => {
+    if (typeof window !== "undefined") localStorage.removeItem(STORAGE_KEY);
+    if (detected.country) {
+      setCountryState(detected.country);
+      setIsOverridden(false);
+    }
+  };
+
   return (
-    <CountryContext.Provider value={{ country, config: COUNTRIES[country], setCountry, detected }}>
+    <CountryContext.Provider
+      value={{ country, config: COUNTRIES[country], setCountry, resetToDetected, detected, detecting, isOverridden }}
+    >
       {children}
     </CountryContext.Provider>
   );

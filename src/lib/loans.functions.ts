@@ -132,3 +132,19 @@ export const getMyApplications = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     return { applications: data ?? [] };
   });
+
+export const getApplication = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { data: app, error } = await supabase
+      .from("loan_applications")
+      .select("*")
+      .eq("id", data.id)
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!app) throw new Error("Application not found");
+    return { application: app };
+  });

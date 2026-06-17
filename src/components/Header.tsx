@@ -8,12 +8,14 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, LogOut, LayoutDashboard } from "lucide-react";
+import { ChevronDown, LogOut, LayoutDashboard, ShieldAlert, Globe2, RotateCcw } from "lucide-react";
 
 export function Header() {
-  const { country, config, setCountry } = useCountry();
+  const { country, config, setCountry, detected, detecting, isOverridden, resetToDetected } = useCountry();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -34,13 +36,31 @@ export function Header() {
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-1.5">
+              <Button variant="outline" size="sm" className="gap-1.5 relative">
                 <span className="text-base leading-none">{config.flag}</span>
                 <span className="hidden sm:inline">{config.name}</span>
+                {detected.isProxy && (
+                  <ShieldAlert className="h-3.5 w-3.5 text-amber-500" aria-label="Proxy detected" />
+                )}
                 <ChevronDown className="h-3.5 w-3.5 opacity-60" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="w-64">
+              <DropdownMenuLabel className="flex items-center gap-2 text-xs font-normal text-muted-foreground">
+                <Globe2 className="h-3.5 w-3.5" />
+                {detecting
+                  ? "Detecting location…"
+                  : detected.country
+                    ? <>Detected: <span className="font-medium text-foreground">{detected.countryName || COUNTRIES[detected.country].name}</span>{detected.city ? ` · ${detected.city}` : ""}</>
+                    : "Location unavailable"}
+              </DropdownMenuLabel>
+              {detected.isProxy && (
+                <DropdownMenuLabel className="flex items-start gap-2 text-xs font-normal text-amber-600 dark:text-amber-400 pt-0">
+                  <ShieldAlert className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                  <span>Proxy / VPN detected{detected.org ? ` (${detected.org})` : ""}</span>
+                </DropdownMenuLabel>
+              )}
+              <DropdownMenuSeparator />
               {(Object.keys(COUNTRIES) as CountryCode[]).map((c) => (
                 <DropdownMenuItem key={c} onClick={() => setCountry(c)}>
                   <span className="mr-2">{COUNTRIES[c].flag}</span>
@@ -48,6 +68,15 @@ export function Header() {
                   {country === c && <span className="ml-auto text-xs text-muted-foreground">Active</span>}
                 </DropdownMenuItem>
               ))}
+              {isOverridden && detected.country && detected.country !== country && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={resetToDetected}>
+                    <RotateCcw className="mr-2 h-4 w-4" />
+                    Reset to detected ({COUNTRIES[detected.country].name})
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
 
