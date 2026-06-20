@@ -16,6 +16,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ApiPublicKorapayWebhookRouteImport } from './routes/api/public/korapay-webhook'
+import { Route as ApiPublicFlutterwaveWebhookRouteImport } from './routes/api/public/flutterwave-webhook'
 import { Route as AuthenticatedStatusIdRouteImport } from './routes/_authenticated/status.$id'
 import { Route as AuthenticatedApplyLoanTypeRouteImport } from './routes/_authenticated/apply.$loanType'
 
@@ -53,6 +54,12 @@ const ApiPublicKorapayWebhookRoute = ApiPublicKorapayWebhookRouteImport.update({
   path: '/api/public/korapay-webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicFlutterwaveWebhookRoute =
+  ApiPublicFlutterwaveWebhookRouteImport.update({
+    id: '/api/public/flutterwave-webhook',
+    path: '/api/public/flutterwave-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedStatusIdRoute = AuthenticatedStatusIdRouteImport.update({
   id: '/status/$id',
   path: '/status/$id',
@@ -73,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/apply/$loanType': typeof AuthenticatedApplyLoanTypeRoute
   '/status/$id': typeof AuthenticatedStatusIdRoute
+  '/api/public/flutterwave-webhook': typeof ApiPublicFlutterwaveWebhookRoute
   '/api/public/korapay-webhook': typeof ApiPublicKorapayWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -83,6 +91,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/apply/$loanType': typeof AuthenticatedApplyLoanTypeRoute
   '/status/$id': typeof AuthenticatedStatusIdRoute
+  '/api/public/flutterwave-webhook': typeof ApiPublicFlutterwaveWebhookRoute
   '/api/public/korapay-webhook': typeof ApiPublicKorapayWebhookRoute
 }
 export interface FileRoutesById {
@@ -95,6 +104,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/apply/$loanType': typeof AuthenticatedApplyLoanTypeRoute
   '/_authenticated/status/$id': typeof AuthenticatedStatusIdRoute
+  '/api/public/flutterwave-webhook': typeof ApiPublicFlutterwaveWebhookRoute
   '/api/public/korapay-webhook': typeof ApiPublicKorapayWebhookRoute
 }
 export interface FileRouteTypes {
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/apply/$loanType'
     | '/status/$id'
+    | '/api/public/flutterwave-webhook'
     | '/api/public/korapay-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/apply/$loanType'
     | '/status/$id'
+    | '/api/public/flutterwave-webhook'
     | '/api/public/korapay-webhook'
   id:
     | '__root__'
@@ -128,6 +140,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/apply/$loanType'
     | '/_authenticated/status/$id'
+    | '/api/public/flutterwave-webhook'
     | '/api/public/korapay-webhook'
   fileRoutesById: FileRoutesById
 }
@@ -137,6 +150,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
   LoansRoute: typeof LoansRoute
+  ApiPublicFlutterwaveWebhookRoute: typeof ApiPublicFlutterwaveWebhookRoute
   ApiPublicKorapayWebhookRoute: typeof ApiPublicKorapayWebhookRoute
 }
 
@@ -191,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicKorapayWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/flutterwave-webhook': {
+      id: '/api/public/flutterwave-webhook'
+      path: '/api/public/flutterwave-webhook'
+      fullPath: '/api/public/flutterwave-webhook'
+      preLoaderRoute: typeof ApiPublicFlutterwaveWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/status/$id': {
       id: '/_authenticated/status/$id'
       path: '/status/$id'
@@ -229,6 +250,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
   LoansRoute: LoansRoute,
+  ApiPublicFlutterwaveWebhookRoute: ApiPublicFlutterwaveWebhookRoute,
   ApiPublicKorapayWebhookRoute: ApiPublicKorapayWebhookRoute,
 }
 export const routeTree = rootRouteImport
