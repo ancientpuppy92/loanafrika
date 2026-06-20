@@ -49,45 +49,88 @@ export const initiateApplication = createServerFn({ method: "POST" })
 
     if (error || !app) throw new Error(error?.message || "Failed to create application");
 
-    const secret = process.env.KORAPAY_SECRET_KEY;
-    if (!secret) throw new Error("Payment provider not configured");
-
     const reference = `LA-${app.id.slice(0, 8)}-${Date.now()}`;
+    const redirectWithRef = `${data.redirectUrl}?ref=${reference}&app=${app.id}`;
 
-    const res = await fetch("https://api.korapay.com/merchant/api/v1/charges/initialize", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${secret}`,
-      },
-      body: JSON.stringify({
-        amount: data.applicationFee,
-        currency: data.currency,
-        reference,
-        narration: `Loan application fee — ${data.loanType}`,
-        notification_url: `${new URL(data.redirectUrl).origin}/api/public/korapay-webhook`,
-        redirect_url: `${data.redirectUrl}?ref=${reference}&app=${app.id}`,
-        customer: { name: data.fullName, email: data.email },
-        metadata: { application_id: app.id, user_id: userId },
-      }),
-    });
+    let checkoutUrl: string;
 
-    const payload = (await res.json()) as {
-      status: boolean;
-      message?: string;
-      data?: { checkout_url: string; reference: string };
-    };
+    if (data.country === "KE") {
+      // Flutterwave for Kenya (supports M-Pesa, card, Airtel Money)
+      const fwSecret = process.env.FLUTTERWAVE_SECRET_KEY;
+      if (!fwSecret) throw new Error("Payment provider not configured");
 
-    if (!res.ok || !payload.status || !payload.data?.checkout_url) {
-      throw new Error(payload.message || "Could not initialize payment");
+      const res = await fetch("https://api.flutterwave.com/v3/payments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${fwSecret}`,
+        },
+        body: JSON.stringify({
+          tx_ref: reference,
+          amount: data.applicationFee,
+          currency: data.currency,
+          redirect_url: redirectWithRef,
+          payment_options: "card,mpesa,banktransfer",
+          customer: { email: data.email, name: data.fullName, phonenumber: data.phone },
+          customizations: {
+            title: "LendAfrica",
+            description: `Loan application fee — ${data.loanType}`,
+          },
+          meta: { application_id: app.id, user_id: userId },
+        }),
+      });
+
+      const payload = (await res.json()) as {
+        status: string;
+        message?: string;
+        data?: { link: string };
+      };
+
+      if (!res.ok || payload.status !== "success" || !payload.data?.link) {
+        throw new Error(payload.message || "Could not initialize payment");
+      }
+      checkoutUrl = payload.data.link;
+    } else {
+      // Korapay for Nigeria
+      const secret = process.env.KORAPAY_SECRET_KEY;
+      if (!secret) throw new Error("Payment provider not configured");
+
+      const res = await fetch("https://api.korapay.com/merchant/api/v1/charges/initialize", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${secret}`,
+        },
+        body: JSON.stringify({
+          amount: data.applicationFee,
+          currency: data.currency,
+          reference,
+          narration: `Loan application fee — ${data.loanType}`,
+          notification_url: `${new URL(data.redirectUrl).origin}/api/public/korapay-webhook`,
+          redirect_url: redirectWithRef,
+          customer: { name: data.fullName, email: data.email },
+          metadata: { application_id: app.id, user_id: userId },
+        }),
+      });
+
+      const payload = (await res.json()) as {
+        status: boolean;
+        message?: string;
+        data?: { checkout_url: string; reference: string };
+      };
+
+      if (!res.ok || !payload.status || !payload.data?.checkout_url) {
+        throw new Error(payload.message || "Could not initialize payment");
+      }
+      checkoutUrl = payload.data.checkout_url;
     }
 
     await supabase
       .from("loan_applications")
-      .update({ payment_reference: payload.data.reference })
+      .update({ payment_reference: reference })
       .eq("id", app.id);
 
-    return { checkoutUrl: payload.data.checkout_url, reference: payload.data.reference, applicationId: app.id };
+    return { checkoutUrl, reference, applicationId: app.id };
   });
 
 export const verifyPayment = createServerFn({ method: "POST" })
@@ -95,20 +138,38 @@ export const verifyPayment = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ reference: z.string().min(1).max(120), applicationId: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const secret = process.env.KORAPAY_SECRET_KEY;
-    if (!secret) throw new Error("Payment provider not configured");
 
-    const res = await fetch(
-      `https://api.korapay.com/merchant/api/v1/charges/${encodeURIComponent(data.reference)}`,
-      { headers: { Authorization: `Bearer ${secret}` } },
-    );
-    const payload = (await res.json()) as {
-      status: boolean;
-      data?: { status: string; amount: number; currency: string };
-    };
+    const { data: app, error: appErr } = await supabase
+      .from("loan_applications")
+      .select("country")
+      .eq("id", data.applicationId)
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (appErr || !app) throw new Error(appErr?.message || "Application not found");
 
-    const koraStatus = payload?.data?.status?.toLowerCase();
-    const newStatus = koraStatus === "success" ? "paid" : koraStatus === "failed" ? "failed" : "pending";
+    let newStatus: "paid" | "failed" | "pending" = "pending";
+
+    if (app.country === "KE") {
+      const fwSecret = process.env.FLUTTERWAVE_SECRET_KEY;
+      if (!fwSecret) throw new Error("Payment provider not configured");
+      const res = await fetch(
+        `https://api.flutterwave.com/v3/transactions/verify_by_reference?tx_ref=${encodeURIComponent(data.reference)}`,
+        { headers: { Authorization: `Bearer ${fwSecret}` } },
+      );
+      const payload = (await res.json()) as { status: string; data?: { status: string } };
+      const s = payload?.data?.status?.toLowerCase();
+      newStatus = s === "successful" ? "paid" : s === "failed" ? "failed" : "pending";
+    } else {
+      const secret = process.env.KORAPAY_SECRET_KEY;
+      if (!secret) throw new Error("Payment provider not configured");
+      const res = await fetch(
+        `https://api.korapay.com/merchant/api/v1/charges/${encodeURIComponent(data.reference)}`,
+        { headers: { Authorization: `Bearer ${secret}` } },
+      );
+      const payload = (await res.json()) as { status: boolean; data?: { status: string } };
+      const s = payload?.data?.status?.toLowerCase();
+      newStatus = s === "success" ? "paid" : s === "failed" ? "failed" : "pending";
+    }
 
     const { error } = await supabase
       .from("loan_applications")
