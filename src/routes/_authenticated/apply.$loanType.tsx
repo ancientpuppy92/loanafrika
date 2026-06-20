@@ -216,7 +216,7 @@ function ApplyPage() {
 
           <Section title="Disbursement account">
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Bank name"><Input value={bankName} onChange={(e) => setBankName(e.target.value)} maxLength={100} /></Field>
+              <Field label={country === "KE" ? "Bank name (Safaricom or Airtel)" : "Bank name"}><Input value={bankName} onChange={(e) => setBankName(e.target.value)} maxLength={100} placeholder={country === "KE" ? "Safaricom or Airtel" : undefined} /></Field>
               <Field label="Account number"><Input value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} maxLength={30} /></Field>
             </div>
           </Section>
