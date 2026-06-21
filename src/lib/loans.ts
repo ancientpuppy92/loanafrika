@@ -40,7 +40,7 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
         maxAmount: 500_000,
         tenureMonths: [1, 3, 6],
         interestRate: "4% / month",
-        applicationFee: 5_000,
+        applicationFee: 2_400,
       },
       {
         slug: "personal",
@@ -50,7 +50,7 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
         maxAmount: 2_000_000,
         tenureMonths: [6, 12, 18, 24],
         interestRate: "3% / month",
-        applicationFee: 10_000,
+        applicationFee: 3_600,
       },
       {
         slug: "business",
@@ -60,7 +60,7 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
         maxAmount: 10_000_000,
         tenureMonths: [12, 18, 24, 36],
         interestRate: "2.5% / month",
-        applicationFee: 15_000,
+        applicationFee: 6_000,
       },
     ],
   },
@@ -81,7 +81,7 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
         maxAmount: 50_000,
         tenureMonths: [1, 3, 6],
         interestRate: "4% / month",
-        applicationFee: 230,
+        applicationFee: 199,
       },
       {
         slug: "personal",
@@ -91,7 +91,7 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
         maxAmount: 200_000,
         tenureMonths: [6, 12, 18, 24],
         interestRate: "3% / month",
-        applicationFee: 230,
+        applicationFee: 299,
       },
       {
         slug: "business",
@@ -101,7 +101,7 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
         maxAmount: 1_000_000,
         tenureMonths: [12, 18, 24, 36],
         interestRate: "2.5% / month",
-        applicationFee: 230,
+        applicationFee: 499,
       },
     ],
   },
