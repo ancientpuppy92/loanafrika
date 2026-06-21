@@ -46,16 +46,38 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
+  const msg = error.message ?? "";
+  const isEnvError =
+    msg.includes("Missing Supabase environment variable") ||
+    msg.includes("SUPABASE_URL") ||
+    msg.includes("SUPABASE_PUBLISHABLE_KEY") ||
+    msg.includes("not configured");
+
+  const detectedMissing: string[] = [];
+  if (msg.includes("SUPABASE_URL")) detectedMissing.push("SUPABASE_URL", "VITE_SUPABASE_URL");
+  if (msg.includes("SUPABASE_PUBLISHABLE_KEY")) detectedMissing.push("SUPABASE_PUBLISHABLE_KEY", "VITE_SUPABASE_PUBLISHABLE_KEY");
+  if (msg.includes("not configured")) detectedMissing.push("KORAPAY_SECRET_KEY", "FLUTTERWAVE_SECRET_KEY", "FLUTTERWAVE_WEBHOOK_HASH");
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
+      <div className="max-w-lg w-full text-center space-y-6">
+        <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-destructive/10 text-destructive">
+          <ServerOff className="h-6 w-6" />
+        </div>
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">
+            {isEnvError ? "Deployment configuration incomplete" : "This page didn't load"}
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {isEnvError
+              ? "Some required environment variables are missing on this deployment."
+              : "Something went wrong on our end. You can try refreshing or head back home."}
+          </p>
+        </div>
+
+        {isEnvError && <RenderEnvChecklist detectedMissing={detectedMissing} />}
+
+        <div className="flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
               router.invalidate();
