@@ -14,6 +14,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/lib/auth-context";
 import { CountryProvider } from "@/lib/country-context";
+import { RenderEnvChecklist } from "@/components/RenderEnvChecklist";
+import { ServerOff } from "lucide-react";
 
 function NotFoundComponent() {
   return (
